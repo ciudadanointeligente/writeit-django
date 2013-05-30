@@ -2,4 +2,4 @@ from django.db import models
 
 class WriteItApiInstance(models.Model):
 
-	url = models.URLField()
+	url = models.URLField(unique=True)
