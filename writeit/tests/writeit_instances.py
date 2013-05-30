@@ -1,4 +1,5 @@
 from django.test import TestCase
+from writeit.models import WriteItApiInstance
 
 class WriteItApiInstanceTestCase(TestCase):
 	def setUp(self):
@@ -6,4 +7,9 @@ class WriteItApiInstanceTestCase(TestCase):
 
 	def test_create_instance(self):
 
-		self.assertFalse(True)
+		instance = WriteItApiInstance(url= 'http://writeit.ciudadanointeligente.org/api/v1/')
+		self.assertTrue(instance)
+		self.assertEquals(instance.url, 'http://writeit.ciudadanointeligente.org/api/v1/')
+
+
+
