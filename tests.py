@@ -5,7 +5,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'testing_settings'
 from django.core.management import call_command
 
 def runtests():
-    call_command('test', verbosity=2)
+    call_command('test')
     sys.exit(0)
 
 

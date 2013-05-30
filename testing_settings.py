@@ -54,7 +54,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
 )
 
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+#TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 #setting to avoid db changes during test
 SOUTH_TESTS_MIGRATE = False
