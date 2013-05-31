@@ -58,3 +58,7 @@ INSTALLED_APPS = (
 
 #setting to avoid db changes during test
 SOUTH_TESTS_MIGRATE = False
+
+
+WRITEIT_USERNAME = 'admin'
+WRITEIT_KEY = 'e8e11c885307d4709ce64365a5d54acf2a8e11fc'
