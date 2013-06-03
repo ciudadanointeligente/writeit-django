@@ -42,12 +42,14 @@ class WriteItInstanceTestCase(TestCase):
     def test_writeit_instance_creation(self):
         writeitinstance = WriteItInstance.objects.create(api_instance = self.api_instance,
             name='the name of the thing',
-            url="/api/v1/instance/1/"
+            url="/api/v1/instance/1/",
+            remote_id=1
             )
         self.assertTrue(writeitinstance)
         self.assertEquals(writeitinstance.api_instance, self.api_instance)
         self.assertEquals(writeitinstance.name, 'the name of the thing')
         self.assertEquals(writeitinstance.url, "/api/v1/instance/1/")
+        self.assertEquals(writeitinstance.remote_id, 1)
 
 
     def test_retrieve_all2(self):
@@ -65,8 +67,12 @@ class WriteItInstanceTestCase(TestCase):
 
             post_retrieve_instances = WriteItInstance.objects.all()
             self.assertEquals(post_retrieve_instances.count(), 2)
+            self.assertEquals(post_retrieve_instances[0].remote_id, 1)
+            self.assertEquals(post_retrieve_instances[1].remote_id, 2)
             self.assertEquals(post_retrieve_instances[0].name, "instance 1")
+            
             self.assertEquals(post_retrieve_instances[1].name, "instance 2")
+
             self.assertEquals(post_retrieve_instances[0].url, "/api/v1/instance/1/")
             self.assertEquals(post_retrieve_instances[1].url, "/api/v1/instance/2/")
             self.assertEquals(post_retrieve_instances[0].api_instance, self.api_instance)
@@ -123,11 +129,6 @@ class MessageRemoteGetterTestCase(TestCase):
             api.instance.return_value.messages.get.return_value = instances.get_messages_for_instance1()
 
             self.writeitinstance.fetch_messages(1)
-
-
-
-
-
             api.instance.assert_called_with(1)
 
             api.instance(1).messages.get.assert_called_with(
@@ -139,6 +140,7 @@ class MessageRemoteGetterTestCase(TestCase):
 
             self.assertEquals(created_messages.count(), 2)
             self.assertEquals(created_messages[0].author_email, "luisfelipealvarez@gmail.com")
+            self.assertEquals(created_messages[0].remote_id, 1)
             self.assertEquals(created_messages[0].author_name, "Felipi poo")
             self.assertEquals(created_messages[0].content, "Quiero probar esto")
             self.assertEquals(created_messages[0].url, "/api/v1/message/1/")

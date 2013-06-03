@@ -23,6 +23,7 @@ class WriteItApiInstance(models.Model):
 class WriteItDocument(models.Model):
     api_instance = models.ForeignKey(WriteItApiInstance)
     url = models.CharField(max_length=256)
+    remote_id = models.IntegerField(null=True)
 
 
 class WriteItInstance(WriteItDocument):
@@ -32,7 +33,9 @@ class WriteItInstance(WriteItDocument):
         api = api_instance.get_api()
         objects = api.instance.get(username=settings.WRITEIT_USERNAME, api_key=settings.WRITEIT_KEY)['objects']
         for api_object in objects:
-            instance = cls.objects.create(api_instance=api_instance,
+            instance = cls.objects.create(
+                    remote_id=api_object['id'],
+                    api_instance=api_instance,
                      url=api_object['resource_uri'],
                      name=api_object['name'])
 
@@ -41,7 +44,9 @@ class WriteItInstance(WriteItDocument):
         api = self.api_instance.get_api()
         objects = api.instance(remote_id).messages.get(username=settings.WRITEIT_USERNAME, api_key=settings.WRITEIT_KEY)["objects"]
         for message_dict in objects:
-            message = Message.objects.create(writeitinstance=self,
+            message = Message.objects.create(
+                remote_id=message_dict['id'],
+                writeitinstance=self,
                 api_instance=self.api_instance,
                 author_email= message_dict["author_email"],
                 author_name= message_dict["author_name"],
