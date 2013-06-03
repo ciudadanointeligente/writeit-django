@@ -5,9 +5,12 @@ import slumber
 class WriteItApiInstance(models.Model):
 
     url = models.URLField(unique=True)
+    def __init__(self, *args, **kwargs):
+        super(WriteItApiInstance, self).__init__(*args, **kwargs)
+        self.api = slumber.API(self.url)
 
     def get_api(self):
-        api = slumber.API(self.url)
+        api = self.api
         return api
 
     def get_all(self):
@@ -34,9 +37,20 @@ class WriteItInstance(WriteItDocument):
                      name=api_object['name'])
 
 
-    def fetch_messages(self):
+    def fetch_messages(self, remote_id):
         api = self.api_instance.get_api()
-        objects = api.instance.messages.get(username=settings.WRITEIT_USERNAME, api_key=settings.WRITEIT_KEY)
+        objects = api.instance(remote_id).messages.get(username=settings.WRITEIT_USERNAME, api_key=settings.WRITEIT_KEY)["objects"]
+        for message_dict in objects:
+            message = Message.objects.create(writeitinstance=self,
+                api_instance=self.api_instance,
+                author_email= message_dict["author_email"],
+                author_name= message_dict["author_name"],
+                content= message_dict["content"],
+                subject= message_dict["subject"],
+                url= message_dict['resource_uri']
+
+                )
+
 
 
 
