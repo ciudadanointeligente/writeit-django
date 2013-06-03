@@ -37,7 +37,14 @@ def get_messages_for_instance1():
             },
             "objects": [
                     {
-                        "answers": [ ],
+                        "answers": [
+                        {
+                            "content": "weeena",
+                            "created": "2013-05-29",
+                            "id": 1,
+                            "resource_uri": ""
+                            }
+                         ],
                         "author_email": "luisfelipealvarez@gmail.com",
                         "author_name": "Felipi poo",
                         "content": "Quiero probar esto",

@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from datetime import datetime
+import time
 import slumber
 
 class WriteItApiInstance(models.Model):
@@ -53,8 +55,13 @@ class WriteItInstance(WriteItDocument):
                 content= message_dict["content"],
                 subject= message_dict["subject"],
                 url= message_dict['resource_uri']
-
                 )
+            for answer_dict in message_dict['answers']:
+                answer = Answer.objects.create(
+                    api_instance=self.api_instance,
+                    content = answer_dict["content"],
+                    remote_id = answer_dict["id"]
+                    )
 
 
 
@@ -66,3 +73,7 @@ class Message(WriteItDocument):
     content = models.TextField()
     writeitinstance = models.ForeignKey(WriteItInstance)
     slug = models.CharField(max_length=512)
+
+class Answer(WriteItDocument):
+    content = models.TextField()
+    created = models.DateField(null=True)

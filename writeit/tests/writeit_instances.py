@@ -1,9 +1,10 @@
 from django.test import TestCase
-from writeit.models import WriteItApiInstance, WriteItInstance, Message
+from writeit.models import WriteItApiInstance, WriteItInstance, Message, Answer
 from django.db import IntegrityError
 from unittest import skip
 import slumber
 from django.conf import settings
+from datetime import datetime
 
 class WriteItApiInstanceTestCase(TestCase):
     def setUp(self):
@@ -111,6 +112,9 @@ class MessageTestCase(TestCase):
 
 
 
+
+
+
 class MessageRemoteGetterTestCase(TestCase):
     def setUp(self):
         self.api_instance = WriteItApiInstance(url= 'http://writeit.ciudadanointeligente.org/api/v1/')
@@ -145,6 +149,21 @@ class MessageRemoteGetterTestCase(TestCase):
             self.assertEquals(created_messages[0].content, "Quiero probar esto")
             self.assertEquals(created_messages[0].url, "/api/v1/message/1/")
             self.assertEquals(created_messages[0].subject, "Probando probando")
+
+    def test_get_all_messages_with_answers(self):
+        with patch("slumber.Resource", spec=True) as Resource:
+            api = Resource.return_value
+            api.instance = Resource.return_value
+            api.instance.return_value = Resource.return_value
+            api.instance.return_value.messages = Resource.return_value
+            api.instance.return_value.messages.get.return_value = instances.get_messages_for_instance1()
+            self.writeitinstance.fetch_messages(1)
+
+            answers = Answer.objects.all()
+            self.assertTrue(answers.count(), 1)
+            self.assertEquals(answers[0].content, "weeena")
+            self.assertEquals(answers[0].remote_id, 1)
+
 
 
 
