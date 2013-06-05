@@ -93,7 +93,6 @@ class Message(WriteItDocument):
             "writeitinstance" : self.writeitinstance.url,
             "slug" : self.slug,
             "people":people
-
             }
             )
 
