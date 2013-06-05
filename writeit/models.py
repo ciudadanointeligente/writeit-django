@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from datetime import datetime
 from popit.models import Person
+from writeit.apikey_auth import ApiKeyAuth
 import time
 import slumber
 
@@ -10,7 +11,7 @@ class WriteItApiInstance(models.Model):
     url = models.URLField(unique=True)
     def __init__(self, *args, **kwargs):
         super(WriteItApiInstance, self).__init__(*args, **kwargs)
-        self.api = slumber.API(self.url)
+        self.api = slumber.API(self.url, auth=ApiKeyAuth(settings.WRITEIT_USERNAME, settings.WRITEIT_KEY))
 
     def get_api(self):
         api = self.api

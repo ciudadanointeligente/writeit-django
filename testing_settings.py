@@ -61,5 +61,6 @@ INSTALLED_APPS = (
 SOUTH_TESTS_MIGRATE = False
 
 TEST_POPIT_API_URL = 'http://popit.mysociety.org'
+
 WRITEIT_USERNAME = 'admin'
 WRITEIT_KEY = 'e8e11c885307d4709ce64365a5d54acf2a8e11fc'

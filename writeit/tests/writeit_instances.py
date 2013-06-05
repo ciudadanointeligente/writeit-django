@@ -7,6 +7,7 @@ from django.conf import settings
 from datetime import datetime
 from unittest import skip
 from popit.models import ApiInstance as PopitApiInstance, Person
+from writeit.apikey_auth import ApiKeyAuth
 
 class WriteItApiInstanceTestCase(TestCase):
     def setUp(self):
@@ -28,6 +29,13 @@ class WriteItApiInstanceTestCase(TestCase):
     def test_instance_returns_an_slumber_api(self):
         api = self.api_instance.get_api()
         self.assertTrue(isinstance(api, slumber.API) )
+
+    def test_instance_api_with_auth(self):
+        api = self.api_instance.get_api()
+        auth = api._store['session'].auth
+        self.assertTrue(isinstance(auth, ApiKeyAuth))
+        self.assertEquals(auth.username, settings.WRITEIT_USERNAME)
+        self.assertEquals(auth.api_key, settings.WRITEIT_KEY)
 
 
 
