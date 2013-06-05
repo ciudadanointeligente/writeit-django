@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from datetime import datetime
+from popit.models import Person
 import time
 import slumber
 
@@ -73,6 +74,27 @@ class Message(WriteItDocument):
     content = models.TextField()
     writeitinstance = models.ForeignKey(WriteItInstance)
     slug = models.CharField(max_length=512)
+    people = models.ManyToManyField(Person, related_name='messages')
+        
+
+        
+    def push_to_the_api(self):
+        api = self.api_instance.get_api()
+        people = []
+        for person in self.people.all():
+            people.append(person.popit_url)
+
+        api.message.post({
+            "author_name" : self.author_name,
+            "author_email" : self.author_email,
+            "subject" : self.subject,
+            "content" : self.content,
+            "writeitinstance" : self.writeitinstance.url,
+            "slug" : self.slug,
+            "people":people
+
+            }
+            )
 
 class Answer(WriteItDocument):
     content = models.TextField()

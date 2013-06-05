@@ -5,6 +5,8 @@ from unittest import skip
 import slumber
 from django.conf import settings
 from datetime import datetime
+from unittest import skip
+from popit.models import ApiInstance as PopitApiInstance, Person
 
 class WriteItApiInstanceTestCase(TestCase):
     def setUp(self):
@@ -90,16 +92,23 @@ class MessageTestCase(TestCase):
             name='the name of the thing',
             url="/api/v1/instance/1/"
             )
+        self.popit_api_instance = PopitApiInstance.objects.create(url='http://popit.org/api/v1')
+        self.person1 = Person.objects.create(
+            api_instance=self.popit_api_instance, 
+            name= "Felipe", 
+            popit_url= 'http://popit.org/api/v1/persons/3')
 
 
     def test_message_instanciate(self):
-        message = Message(api_instance=self.api_instance
+        message = Message.objects.create(api_instance=self.api_instance
             , author_name='author'
             , author_email='author email'
             , subject = 'subject'
             , content = 'content'
             , writeitinstance = self.writeitinstance
-            , slug = 'subject-slugified')
+            , slug = 'subject-slugified'
+            )
+        message.people.add(self.person1)
 
         self.assertTrue(message)
         self.assertEquals(message.api_instance, self.api_instance)
@@ -109,7 +118,8 @@ class MessageTestCase(TestCase):
         self.assertEquals(message.content, 'content')
         self.assertEquals(message.writeitinstance, self.writeitinstance)
         self.assertEquals(message.slug, 'subject-slugified')
-
+        self.assertEquals(message.people.all().count(), 1)
+        self.assertEquals(message.people.all()[0], self.person1)
 
 
 
@@ -123,6 +133,41 @@ class MessageRemoteGetterTestCase(TestCase):
             name='the name of the thing',
             url="/api/v1/instance/1/"
             )
+
+        self.popit_api_instance = PopitApiInstance.objects.create(url='http://popit.org/api/v1')
+        self.person1 = Person.objects.create(
+            api_instance=self.popit_api_instance, 
+            name= "Felipe", 
+            popit_url= 'http://popit.org/api/v1/persons/3')
+
+
+    #@skip("create messages with people")
+    def test_message_post_to_the_API(self):
+        with patch("slumber.Resource", spec=True) as Resource:
+            api = Resource.return_value
+            api.message = Resource.return_value
+            message = Message.objects.create(api_instance=self.api_instance
+            , author_name='author'
+            , author_email='author email'
+            , subject = 'subject'
+            , content = 'content'
+            , writeitinstance = self.writeitinstance
+            , slug = 'subject-slugified'
+            )
+            message.people.add(self.person1)
+
+
+            message.push_to_the_api()
+
+            api.message.post.assert_called_with({
+                "author_name":'author',
+                "author_email":'author email',
+                "subject" : 'subject',
+                "content" : 'content',
+                "writeitinstance" : self.writeitinstance.url,
+                "slug" : 'subject-slugified',
+                "people":['http://popit.org/api/v1/persons/3']
+                })
 
     def test_when_I_fetch_an_instance_it_brings_all_its_messages_as_well(self):
         with patch("slumber.Resource", spec=True) as Resource:

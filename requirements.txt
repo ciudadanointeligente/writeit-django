@@ -1,2 +1,4 @@
 Django
 slumber
+south
+-e git://github.com/mysociety/popit-django.git#egg=popit-django
