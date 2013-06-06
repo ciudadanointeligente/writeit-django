@@ -39,7 +39,6 @@ class WriteItApiInstanceTestCase(TestCase):
 
 
 
-
 from mock import patch, MagicMock
 from fixtures import instances
 
