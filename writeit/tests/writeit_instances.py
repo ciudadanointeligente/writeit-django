@@ -173,7 +173,7 @@ class MessageRemoteGetterTestCase(TestCase):
                 "content" : 'content',
                 "writeitinstance" : self.writeitinstance.url,
                 "slug" : 'subject-slugified',
-                "people":['http://popit.org/api/v1/persons/3']
+                "persons":['http://popit.org/api/v1/persons/3']
                 })
 
     def test_when_I_fetch_an_instance_it_brings_all_its_messages_as_well(self):

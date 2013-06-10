@@ -81,9 +81,9 @@ class Message(WriteItDocument):
         
     def push_to_the_api(self):
         api = self.api_instance.get_api()
-        people = []
+        persons = []
         for person in self.people.all():
-            people.append(person.popit_url)
+            persons.append(person.popit_url)
 
         api.message.post({
             "author_name" : self.author_name,
@@ -92,7 +92,7 @@ class Message(WriteItDocument):
             "content" : self.content,
             "writeitinstance" : self.writeitinstance.url,
             "slug" : self.slug,
-            "people":people
+            "persons":persons
             }
             )
 
