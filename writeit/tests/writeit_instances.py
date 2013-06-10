@@ -62,6 +62,15 @@ class WriteItInstanceTestCase(TestCase):
         self.assertEquals(writeitinstance.remote_id, 1)
 
 
+    def test_unicode(self):
+        writeitinstance = WriteItInstance.objects.create(api_instance = self.api_instance,
+            name='the name of the thing',
+            url="/api/v1/instance/1/",
+            remote_id=1
+            )
+        self.assertEquals(writeitinstance.__unicode__(), 'the name of the thing at http://writeit.ciudadanointeligente.org/api/v1/')
+
+
     def test_retrieve_all2(self):
         from slumber import Resource
         with patch("slumber.Resource", spec=True) as Resource:

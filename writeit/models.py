@@ -43,6 +43,12 @@ class WriteItInstance(WriteItDocument):
                      url=api_object['resource_uri'],
                      name=api_object['name'])
 
+    def __unicode__(self):
+        return "%(name)s at %(api_instance)s"%{
+            'name':self.name,
+            'api_instance':self.api_instance.url
+            }
+
 
     def fetch_messages(self, remote_id):
         api = self.api_instance.get_api()
