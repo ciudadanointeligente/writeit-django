@@ -19,6 +19,7 @@ export DIR=writeit-for-testing
 export BRANCH=master
 export REMOTE_REPO=https://github.com/ciudadanointeligente/write-it.git
 export PORT=2425
+export VIRTUALENV=writeit-for-testing
 
 if [ ! -e $DIR ]; then mkdir $DIR; fi
 cd $DIR;
@@ -34,15 +35,20 @@ if [ ! -e done.txt ]; then
   # install the required node modules
   #npm install pow-mongodb-fixtures --quiet
   #npm install --quiet
-  virtualenv writeit-for-testing
+  virtualenv $VIRTUALENV
+  source $VIRTUALENV/bin/activate
   pip install -r requirements.txt
-  python manage.py syncdb
-  python manage.py migrate
+  python manage.py syncdb --noinput
+  python manage.py migrate --noinput
   python manage.py loaddata ../example_data.yaml
-  python manage.py runserver
 
   touch done.txt;
+else
+  git pull origin $BRANCH
+  source $VIRTUALENV/bin/activate
+  python manage.py runserver $PORT &
 fi
+
 
 
 # Run the server in the background. Send access logging to file.
