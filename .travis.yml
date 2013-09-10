@@ -3,10 +3,11 @@ python:
   - "2.7"
 # command to install dependencies
 install:
-  - pip install -r requirements.txt 
+  - pip install -r requirements.txt
   - pip install -r testing_requirements.txt
 # command to run tests
 env:
   - DJANGO_VERSION=1.5
 script:
+  - ./start_writeit_for_testing.bash
   - python tests.py
