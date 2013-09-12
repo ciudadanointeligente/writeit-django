@@ -2,6 +2,8 @@ language: python
 python:
   - "2.7"
 # command to install dependencies
+services:
+  - mongodb
 install:
   - pip install -r requirements.txt
   - pip install -r testing_requirements.txt
@@ -9,5 +11,6 @@ install:
 env:
   - DJANGO_VERSION=1.5
 script:
+  - ./start_local_popit_api.bash
   - ./start_writeit_for_testing.bash
   - python tests.py

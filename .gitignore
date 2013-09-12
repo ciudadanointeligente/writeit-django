@@ -37,3 +37,5 @@ nosetests.xml
 
 #WRITEIT specific
 writeit-for-testing
+#for POPIT
+popit-api-for-testing
