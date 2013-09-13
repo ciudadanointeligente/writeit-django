@@ -55,7 +55,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
 )
 #I lauched this one in start_writeit_for_testing.bash
-LOCAL_TESTING_WRITEIT = 'http://localhost:2425/api/v1/'
+LOCAL_TESTING_WRITEIT = 'http://127.0.0.1.xip.io:2425/api/v1/'
 
 #TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 

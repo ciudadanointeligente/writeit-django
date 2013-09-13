@@ -273,6 +273,18 @@ class MessageRemoteGetterTestCase(TestCase):
                 "slug" : 'subject-slugified',
                 "persons":['http://popit.org/api/v1/persons/3']
                 })
+    @skip("I must first fix problem in travis CI")
+    def test_when_posting_to_the_api_writeit_message_gets_a_remote_uri(self):
+        message = Message.objects.create(api_instance=self.api_instance
+            , author_name='author'
+            , author_email='author email'
+            , subject = 'subject'
+            , content = 'content'
+            , writeitinstance = self.writeitinstance
+            , slug = 'subject-slugified'
+            )
+
+
 
     def test_when_I_fetch_an_instance_it_brings_all_its_messages_as_well(self):
         with patch("slumber.Resource", spec=True) as Resource:
