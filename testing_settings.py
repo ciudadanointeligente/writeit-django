@@ -54,6 +54,8 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
+#I lauched this one in start_writeit_for_testing.bash
+LOCAL_TESTING_WRITEIT = 'http://localhost:2425/api/v1/'
 
 #TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
@@ -62,5 +64,19 @@ SOUTH_TESTS_MIGRATE = False
 
 TEST_POPIT_API_URL = 'http://popit.mysociety.org'
 
+#check from line 4 to 19 in example_data.yaml
 WRITEIT_USERNAME = 'admin'
-WRITEIT_KEY = 'e8e11c885307d4709ce64365a5d54acf2a8e11fc'
+WRITEIT_KEY = 'a'
+
+# POPIT TESTING RELATED
+TEST_POPIT_API_HOST_IP   = '127.0.0.1'
+TEST_POPIT_API_PORT      = '3000'
+TEST_POPIT_API_SUBDOMAIN = 'popit-django-test'
+
+# We have our local popit instance for testing porpouses running using 
+# the bash file start_local_popit_api.bash
+# create the url to use for testing the database.
+# See http://xip.io/ for details on the domain used.
+TEST_POPIT_API_URL = "http://%s.%s.xip.io:%s/api" % ( TEST_POPIT_API_SUBDOMAIN,
+                                                      TEST_POPIT_API_HOST_IP,
+                                                      TEST_POPIT_API_PORT )

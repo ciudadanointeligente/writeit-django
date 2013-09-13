@@ -3,7 +3,9 @@ from django.conf import settings
 from datetime import datetime
 from popit.models import Person
 from writeit.apikey_auth import ApiKeyAuth
+import requests
 import time
+import re
 import slumber
 
 class WriteItApiInstance(models.Model):
@@ -70,6 +72,19 @@ class WriteItInstance(WriteItDocument):
                     content = answer_dict["content"],
                     remote_id = answer_dict["id"]
                     )
+
+    def push_to_the_api(self, extra_params=None):
+        api = self.api_instance.get_api()
+        dictified = {
+        'name': self.name
+        }
+        if extra_params:
+            dictified.update(extra_params)
+        response = api.instance._request("POST", data=dictified)
+        self.url = response.headers["location"]
+        match_id = re.match(r'^'+api.instance._store['base_url']+'/(?P<id>\d+)/?', self.url)
+        self.remote_id = match_id.group('id')
+        self.save()
 
 
 

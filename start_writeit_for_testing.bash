@@ -46,6 +46,7 @@ if [ ! -e done.txt ]; then
 else
   git pull origin $BRANCH
   source $VIRTUALENV/bin/activate
+  pip install -r requirements.txt
   python manage.py runserver $PORT &
 fi
 
