@@ -143,6 +143,7 @@ class WriteItInstanceTestCase(TestCase):
         writeitinstance.push_to_the_api()
         self.assertTrue(writeitinstance.url)
         self.assertTrue(writeitinstance.remote_id)
+        self.assertEquals(writeitinstance.url, u'/api/v1/instance/%s/' % writeitinstance.remote_id)
 
 
         api = api_instance.get_api()
@@ -273,15 +274,15 @@ class MessageRemoteGetterTestCase(TestCase):
                 "slug" : 'subject-slugified',
                 "persons":['http://popit.org/api/v1/persons/3']
                 })
-    @skip("I must first fix problem in travis CI")
+
+    @skip('not passing unkown reason yet')
     def test_when_posting_to_the_api_writeit_message_gets_a_remote_uri(self):
         message = Message.objects.create(api_instance=self.api_instance
             , author_name='author'
-            , author_email='author email'
+            , author_email='falvarez@votainteligente.cl'
             , subject = 'subject'
             , content = 'content'
             , writeitinstance = self.writeitinstance
-            , slug = 'subject-slugified'
             )
         message.people.add(self.person1)
         message.push_to_the_api()

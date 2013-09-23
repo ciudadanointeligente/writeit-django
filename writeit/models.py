@@ -3,6 +3,8 @@ from django.conf import settings
 from datetime import datetime
 from popit.models import Person
 from writeit.apikey_auth import ApiKeyAuth
+from django.utils.encoding import force_text
+import simplejson as json
 import requests
 import time
 import re
@@ -81,8 +83,9 @@ class WriteItInstance(WriteItDocument):
         if extra_params:
             dictified.update(extra_params)
         response = api.instance._request("POST", data=dictified)
-        self.url = response.headers["location"]
-        match_id = re.match(r'^'+api.instance._store['base_url']+'/(?P<id>\d+)/?', self.url)
+        as_json = json.loads(force_text(response.content))
+        self.url = as_json['resource_uri']
+        match_id = re.match(r'^'+api.instance._store['base_url']+'/(?P<id>\d+)/?', response.headers['location'])
         self.remote_id = match_id.group('id')
         self.save()
 
@@ -116,7 +119,6 @@ class Message(WriteItDocument):
             "slug" : self.slug,
             "persons":persons
             }
-
         api.message.post(dictionarized)
 
 class Answer(WriteItDocument):
