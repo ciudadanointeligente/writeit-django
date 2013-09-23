@@ -106,7 +106,8 @@ class Message(WriteItDocument):
         for person in self.people.all():
             persons.append(person.popit_url)
 
-        api.message.post({
+
+        dictionarized = {
             "author_name" : self.author_name,
             "author_email" : self.author_email,
             "subject" : self.subject,
@@ -115,7 +116,8 @@ class Message(WriteItDocument):
             "slug" : self.slug,
             "persons":persons
             }
-            )
+
+        api.message.post(dictionarized)
 
 class Answer(WriteItDocument):
     content = models.TextField()

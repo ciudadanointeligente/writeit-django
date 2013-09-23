@@ -232,7 +232,7 @@ class MessageTestCase(TestCase):
 
 class MessageRemoteGetterTestCase(TestCase):
     def setUp(self):
-        self.api_instance = WriteItApiInstance(url= 'http://writeit.ciudadanointeligente.org/api/v1/')
+        self.api_instance = WriteItApiInstance(url= settings.LOCAL_TESTING_WRITEIT)
         self.api_instance.save()
         self.writeitinstance = WriteItInstance.objects.create(api_instance = self.api_instance,
             name='the name of the thing',
@@ -283,6 +283,17 @@ class MessageRemoteGetterTestCase(TestCase):
             , writeitinstance = self.writeitinstance
             , slug = 'subject-slugified'
             )
+        message.people.add(self.person1)
+        message.push_to_the_api()
+
+
+        #Now I must be sure that message has a remote_uri,
+        #that is reachable and that it contains what it is expected
+
+        match_id = re.match(r'^/api/v1/instance/(?P<id>\d+)/?', message.url)
+
+        self.assertIsNotNone(match_id)
+
 
 
 
