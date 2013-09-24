@@ -18,7 +18,7 @@ set -e
 export DIR=writeit-for-testing
 export BRANCH=master
 export REMOTE_REPO=https://github.com/ciudadanointeligente/write-it.git
-export PORT=2425
+export PORT=3001
 export VIRTUALENV=writeit-for-testing
 
 if [ ! -e $DIR ]; then mkdir $DIR; fi
