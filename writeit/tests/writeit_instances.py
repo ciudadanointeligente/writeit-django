@@ -11,6 +11,7 @@ from popit.models import ApiInstance as PopitApiInstance, Person
 from writeit.apikey_auth import ApiKeyAuth
 from popit.tests import instance_helpers
 import os
+import re
 import subprocess
 
 
@@ -240,14 +241,13 @@ class MessageRemoteGetterTestCase(TestCase):
             url="/api/v1/instance/1/"
             )
 
-        self.popit_api_instance = PopitApiInstance.objects.create(url='http://popit.org/api/v1')
+        self.popit_api_instance = PopitApiInstance.objects.create(url='http://popit.mysociety.org/api/v1')
         self.person1 = Person.objects.create(
             api_instance=self.popit_api_instance, 
             name= "Felipe", 
-            popit_url= 'http://popit.org/api/v1/persons/3')
+            popit_url= 'http://popit.mysociety.org/api/v1/persons/3')
 
-
-    #@skip("create messages with people")
+    @skip("replaced by the one below that does not use any mocks")
     def test_message_post_to_the_API(self):
         with patch("slumber.Resource", spec=True) as Resource:
             api = Resource.return_value
@@ -275,7 +275,6 @@ class MessageRemoteGetterTestCase(TestCase):
                 "persons":['http://popit.org/api/v1/persons/3']
                 })
 
-    @skip('not passing unkown reason yet')
     def test_when_posting_to_the_api_writeit_message_gets_a_remote_uri(self):
         message = Message.objects.create(api_instance=self.api_instance
             , author_name='author'
@@ -291,7 +290,7 @@ class MessageRemoteGetterTestCase(TestCase):
         #Now I must be sure that message has a remote_uri,
         #that is reachable and that it contains what it is expected
 
-        match_id = re.match(r'^/api/v1/instance/(?P<id>\d+)/?', message.url)
+        match_id = re.match(r'^/api/v1/message/(?P<id>\d+)/?', message.url)
 
         self.assertIsNotNone(match_id)
 

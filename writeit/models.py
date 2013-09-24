@@ -85,8 +85,7 @@ class WriteItInstance(WriteItDocument):
         response = api.instance._request("POST", data=dictified)
         as_json = json.loads(force_text(response.content))
         self.url = as_json['resource_uri']
-        match_id = re.match(r'^'+api.instance._store['base_url']+'/(?P<id>\d+)/?', response.headers['location'])
-        self.remote_id = match_id.group('id')
+        self.remote_id = as_json['id']
         self.save()
 
 
@@ -119,7 +118,11 @@ class Message(WriteItDocument):
             "slug" : self.slug,
             "persons":persons
             }
-        api.message.post(dictionarized)
+        response = api.message._request("POST", data=dictionarized)
+        as_json = json.loads(force_text(response.content))
+        self.url = as_json['resource_uri']
+        self.remote_id = as_json['id']
+        self.save()
 
 class Answer(WriteItDocument):
     content = models.TextField()
