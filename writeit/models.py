@@ -3,7 +3,11 @@ from django.conf import settings
 from datetime import datetime
 from popit.models import Person
 from writeit.apikey_auth import ApiKeyAuth
+from django.utils.encoding import force_text
+import simplejson as json
+import requests
 import time
+import re
 import slumber
 
 class WriteItApiInstance(models.Model):
@@ -71,6 +75,19 @@ class WriteItInstance(WriteItDocument):
                     remote_id = answer_dict["id"]
                     )
 
+    def push_to_the_api(self, extra_params=None):
+        api = self.api_instance.get_api()
+        dictified = {
+        'name': self.name
+        }
+        if extra_params:
+            dictified.update(extra_params)
+        response = api.instance._request("POST", data=dictified)
+        as_json = json.loads(force_text(response.content))
+        self.url = as_json['resource_uri']
+        self.remote_id = as_json['id']
+        self.save()
+
 
 
 
@@ -91,7 +108,8 @@ class Message(WriteItDocument):
         for person in self.people.all():
             persons.append(person.popit_url)
 
-        api.message.post({
+
+        dictionarized = {
             "author_name" : self.author_name,
             "author_email" : self.author_email,
             "subject" : self.subject,
@@ -100,7 +118,11 @@ class Message(WriteItDocument):
             "slug" : self.slug,
             "persons":persons
             }
-            )
+        response = api.message._request("POST", data=dictionarized)
+        as_json = json.loads(force_text(response.content))
+        self.url = as_json['resource_uri']
+        self.remote_id = as_json['id']
+        self.save()
 
 class Answer(WriteItDocument):
     content = models.TextField()
