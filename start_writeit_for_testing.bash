@@ -47,7 +47,6 @@ else
   git pull origin $BRANCH
   source $VIRTUALENV/bin/activate
   pip install -r requirements.txt
-  python manage.py runserver $PORT &
 fi
 
 
@@ -57,4 +56,5 @@ fi
 
 # give it a chance to start and then print out the url to it
 sleep 2
+python manage.py runserver $PORT > writeit_access.log &
 echo "API should now be running on http://localhost:$PORT/api"
