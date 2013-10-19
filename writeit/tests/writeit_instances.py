@@ -338,5 +338,28 @@ class MessageRemoteGetterTestCase(TestCase):
             self.assertEquals(answers[0].remote_id, 1)
 
 
+    def test_answer_has_a_message_and_a_person(self):
+        message = Message.objects.create(api_instance=self.api_instance
+            , author_name='author'
+            , author_email='falvarez@votainteligente.cl'
+            , subject = 'subject'
+            , content = 'content'
+            , writeitinstance = self.writeitinstance
+            )
+        message.people.add(self.person1)
+        message.push_to_the_api()
+
+
+        answer = Answer.objects.create(
+            content='hola',
+            person= self.person1,
+            message= message
+            )
+
+        self.assertEquals(answer.content, 'hola')
+        self.assertEquals(answer.person, self.person1)
+        self.assertEquals(answer.message, message)
+
+
 
 

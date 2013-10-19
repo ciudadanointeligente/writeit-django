@@ -29,8 +29,8 @@ class WriteItApiInstance(models.Model):
 
 
 class WriteItDocument(models.Model):
-    api_instance = models.ForeignKey(WriteItApiInstance)
-    url = models.CharField(max_length=256)
+    api_instance = models.ForeignKey(WriteItApiInstance, null=True)
+    url = models.CharField(max_length=256, null=True)
     remote_id = models.IntegerField(null=True)
 
 
@@ -71,6 +71,7 @@ class WriteItInstance(WriteItDocument):
             for answer_dict in message_dict['answers']:
                 answer = Answer.objects.create(
                     api_instance=self.api_instance,
+                    message=message,
                     content = answer_dict["content"],
                     remote_id = answer_dict["id"]
                     )
@@ -126,4 +127,12 @@ class Message(WriteItDocument):
 
 class Answer(WriteItDocument):
     content = models.TextField()
+    message = models.ForeignKey(Message)
+    person =  models.ForeignKey(Person, null=True)
     created = models.DateField(null=True)
+
+
+    def __init__(self, *args, **kwargs):
+        if not 'api_instance' in kwargs and 'message' in kwargs:
+            kwargs['api_instance'] = kwargs['message'].api_instance
+        super(Answer,self).__init__(*args, **kwargs)
