@@ -5,9 +5,6 @@ from popolo.models import Person
 from writeit.apikey_auth import ApiKeyAuth
 from django.utils.encoding import force_text
 import json
-import requests
-import time
-import re
 import slumber
 from rest_framework.reverse import reverse
 from urlparse import urljoin
@@ -56,7 +53,6 @@ class WriteItInstance(WriteItDocument):
             'api_instance':self.api_instance.url
             }
 
-
     def fetch_messages(self, remote_id):
         api = self.api_instance.get_api()
         objects = api.instance(remote_id).messages.get(username=settings.WRITEIT_USERNAME, api_key=settings.WRITEIT_KEY)["objects"]
@@ -65,11 +61,11 @@ class WriteItInstance(WriteItDocument):
                 remote_id=message_dict['id'],
                 writeitinstance=self,
                 api_instance=self.api_instance,
-                author_email= message_dict["author_email"],
-                author_name= message_dict["author_name"],
-                content= message_dict["content"],
-                subject= message_dict["subject"],
-                url= message_dict['resource_uri']
+                author_email=message_dict["author_email"],
+                author_name=message_dict["author_name"],
+                content=message_dict["content"],
+                subject=message_dict["subject"],
+                url=message_dict['resource_uri']
                 )
             for answer_dict in message_dict['answers']:
                 answer = Answer.objects.create(
