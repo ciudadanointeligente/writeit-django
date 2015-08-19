@@ -111,7 +111,7 @@ class WriteItInstanceTestCase(TestCase):
             url="/api/v1/instance/1/",
             remote_id=1
             )
-        self.assertEquals(writeitinstance.__unicode__(), 'the name of the thing at http://localhost:3001/api/v1')
+        self.assertEquals(writeitinstance.__unicode__(), 'the name of the thing at http://127.0.0.1.xip.io:3001/api/v1')
 
 
     def test_retrieve_all2(self):
