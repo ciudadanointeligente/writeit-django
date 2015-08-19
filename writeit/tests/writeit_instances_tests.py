@@ -70,30 +70,21 @@ class WriteItInstanceTestCase(TestCase):
 
 
     def test_retrieve_all2(self):
-        from slumber import Resource
-        with patch("slumber.Resource", spec=True) as Resource:
-            #Faking the response
-            api = Resource.return_value
-            api.instance = Resource.return_value
-            api.instance.get.return_value = instances.get_all()
-            #Making the call to the api
-            self.api_instance.get_all()
+        
+        self.api_instance.get_all()
 
-            #Now Assertions come
-            api.instance.get.assert_called_with(username=settings.WRITEIT_USERNAME, api_key=settings.WRITEIT_KEY)
+        post_retrieve_instances = WriteItInstance.objects.all()
+        self.assertEquals(post_retrieve_instances.count(), 2)
+        self.assertEquals(post_retrieve_instances[0].remote_id, 1)
+        self.assertEquals(post_retrieve_instances[1].remote_id, 2)
+        self.assertEquals(post_retrieve_instances[0].name, "instance 1")
+        
+        self.assertEquals(post_retrieve_instances[1].name, "instance 2")
 
-            post_retrieve_instances = WriteItInstance.objects.all()
-            self.assertEquals(post_retrieve_instances.count(), 2)
-            self.assertEquals(post_retrieve_instances[0].remote_id, 1)
-            self.assertEquals(post_retrieve_instances[1].remote_id, 2)
-            self.assertEquals(post_retrieve_instances[0].name, "instance 1")
-            
-            self.assertEquals(post_retrieve_instances[1].name, "instance 2")
-
-            self.assertEquals(post_retrieve_instances[0].url, "/api/v1/instance/1/")
-            self.assertEquals(post_retrieve_instances[1].url, "/api/v1/instance/2/")
-            self.assertEquals(post_retrieve_instances[0].api_instance, self.api_instance)
-            self.assertEquals(post_retrieve_instances[1].api_instance, self.api_instance)
+        self.assertEquals(post_retrieve_instances[0].url, "/api/v1/instance/1/")
+        self.assertEquals(post_retrieve_instances[1].url, "/api/v1/instance/2/")
+        self.assertEquals(post_retrieve_instances[0].api_instance, self.api_instance)
+        self.assertEquals(post_retrieve_instances[1].api_instance, self.api_instance)
 
     @skip("Not yet creating an instance")
     def test_I_can_post_a_writeit_instance(self):
