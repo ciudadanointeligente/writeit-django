@@ -14,6 +14,7 @@ from writeit.apikey_auth import ApiKeyAuth
 import os
 import re
 import subprocess
+from django.contrib.sites.models import Site
 
 
 # def popit_load_data(fixture_name='default'):
@@ -110,7 +111,7 @@ class WriteItInstanceTestCase(TestCase):
             url="/api/v1/instance/1/",
             remote_id=1
             )
-        self.assertEquals(writeitinstance.__unicode__(), 'the name of the thing at http://127.0.0.1.xip.io:3001/api/v1')
+        self.assertEquals(writeitinstance.__unicode__(), 'the name of the thing at http://localhost:3001/api/v1')
 
 
     def test_retrieve_all2(self):
@@ -196,29 +197,27 @@ class WriteItInstanceTestCase(TestCase):
 
 class MessageTestCase(TestCase):
     def setUp(self):
-        self.api_instance = WriteItApiInstance(url= 'http://writeit.ciudadanointeligente.org')
+        self.api_instance = WriteItApiInstance(url=settings.LOCAL_TESTING_WRITEIT)
         self.api_instance.save()
         self.writeitinstance = WriteItInstance.objects.create(api_instance = self.api_instance,
             name='the name of the thing',
             url="/api/v1/instance/1/"
             )
         # self.popit_api_instance = PopitApiInstance.objects.create(url='http://popit.org/api/v1')
-        self.person1 = Person.objects.create(
-            # api_instance=self.popit_api_instance, 
-            name= "Felipe", 
-            # popit_url= 'http://popit.org/api/v1/persons/3'
+        self.person1 = Person.objects.create(   
+            name= "Felipe",
             )
 
 
     def test_message_instanciate(self):
         message = Message.objects.create(api_instance=self.api_instance
-            , author_name='author'
-            , author_email='author email'
-            , subject = 'subject'
-            , content = 'content'
-            , writeitinstance = self.writeitinstance
-            , slug = 'subject-slugified'
-            )
+                                         , author_name='author'
+                                         , author_email='author email'
+                                         , subject = 'subject'
+                                         , content = 'content'
+                                         , writeitinstance = self.writeitinstance
+                                         , slug='subject-slugified'
+                                         )
         message.people.add(self.person1)
 
         self.assertTrue(message)
@@ -238,47 +237,21 @@ class MessageTestCase(TestCase):
 
 class MessageRemoteGetterTestCase(TestCase):
     def setUp(self):
+        site = Site.objects.get(id=settings.SITE_ID)
+        site.domain = 'localhost:8000'
+        site.name = 'localhost:8000'
+        site.save()
         self.api_instance = WriteItApiInstance(url= settings.LOCAL_TESTING_WRITEIT)
         self.api_instance.save()
-        self.writeitinstance = WriteItInstance.objects.create(api_instance = self.api_instance,
+        self.writeitinstance = WriteItInstance.objects.create(api_instance=self.api_instance,
             name='the name of the thing',
             url="/api/v1/instance/1/"
             )
 
         # self.popit_api_instance = PopitApiInstance.objects.create(url='http://popit.mysociety.org/api/v1')
         self.person1 = Person.objects.create(
-            # api_instance=self.popit_api_instance, 
-            name= "Felipe", 
-            # popit_url= 'http://popit.mysociety.org/api/v1/persons/3'
+            name="Felipe",
             )
-
-    @skip("replaced by the one below that does not use any mocks")
-    def test_message_post_to_the_API(self):
-        with patch("slumber.Resource", spec=True) as Resource:
-            api = Resource.return_value
-            api.message = Resource.return_value
-            message = Message.objects.create(api_instance=self.api_instance
-            , author_name='author'
-            , author_email='author email'
-            , subject = 'subject'
-            , content = 'content'
-            , writeitinstance = self.writeitinstance
-            , slug = 'subject-slugified'
-            )
-            message.people.add(self.person1)
-
-
-            message.push_to_the_api()
-
-            api.message.post.assert_called_with({
-                "author_name":'author',
-                "author_email":'author email',
-                "subject" : 'subject',
-                "content" : 'content',
-                "writeitinstance" : self.writeitinstance.url,
-                "slug" : 'subject-slugified',
-                "persons":['http://localhost:8000/persons/felipe']
-                })
 
     def test_when_posting_to_the_api_writeit_message_gets_a_remote_uri(self):
         message = Message.objects.create(api_instance=self.api_instance
@@ -329,19 +302,10 @@ class MessageRemoteGetterTestCase(TestCase):
             self.assertEquals(created_messages[0].subject, "Probando probando")
 
     def test_get_all_messages_with_answers(self):
-        with patch("slumber.Resource", spec=True) as Resource:
-            api = Resource.return_value
-            api.instance = Resource.return_value
-            api.instance.return_value = Resource.return_value
-            api.instance.return_value.messages = Resource.return_value
-            api.instance.return_value.messages.get.return_value = instances.get_messages_for_instance1()
-            self.writeitinstance.fetch_messages(1)
+        self.writeitinstance.fetch_messages(1)
 
-            answers = Answer.objects.all()
-            self.assertTrue(answers.count(), 1)
-            self.assertEquals(answers[0].content, "Public Answer")
-            self.assertEquals(answers[0].remote_id, 1)
-
-
-
+        answers = Answer.objects.all()
+        self.assertTrue(answers.count(), 1)
+        self.assertEquals(answers[0].content, "Public Answer")
+        self.assertEquals(answers[0].remote_id, 1)
 

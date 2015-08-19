@@ -51,7 +51,9 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
+    'django.contrib.sessions',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     # 'south',
     'writeit',
     # 'popit',
@@ -63,6 +65,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'popolorest',
 )
+SITE_ID = 1
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -101,3 +104,41 @@ TEST_POPIT_API_SUBDOMAIN = 'popit-django-test'
 TEST_POPIT_API_URL = "http://%s.%s.xip.io:%s/api" % ( TEST_POPIT_API_SUBDOMAIN,
                                                       TEST_POPIT_API_HOST_IP,
                                                       TEST_POPIT_API_PORT )
+
+logging = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'NOTSET',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+            }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['null'],  # Quiet by default!
+            'propagate': False,
+            'level': 'DEBUG',
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'ERROR'
+        },
+        'django.security': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'ERROR'
+        },
+    }
+}
