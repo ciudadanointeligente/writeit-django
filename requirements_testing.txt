@@ -1,0 +1,4 @@
+djangorestframework
+-e git+https://github.com/ciudadanointeligente/popolorest@redisplaying_info_as_popit_does#egg=popolorest
+django-nose
+nose

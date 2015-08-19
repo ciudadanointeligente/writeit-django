@@ -1,10 +1,10 @@
 from django.db import models
 from django.conf import settings
 from datetime import datetime
-from popit.models import Person
+from popolo.models import Person
 from writeit.apikey_auth import ApiKeyAuth
 from django.utils.encoding import force_text
-import simplejson as json
+import json
 import requests
 import time
 import re
@@ -106,7 +106,7 @@ class Message(WriteItDocument):
         api = self.api_instance.get_api()
         persons = []
         for person in self.people.all():
-            persons.append(person.popit_url)
+            persons.append(person.id)
 
 
         dictionarized = {
@@ -118,7 +118,7 @@ class Message(WriteItDocument):
             "slug" : self.slug,
             "persons":persons
             }
-        response = api.message._request("POST", data=dictionarized)
+        response = api.message._request("POST", data=dictionarized) 
         as_json = json.loads(force_text(response.content))
         self.url = as_json['resource_uri']
         self.remote_id = as_json['id']

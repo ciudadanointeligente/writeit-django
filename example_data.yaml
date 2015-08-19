@@ -40,28 +40,28 @@
 - fields: {content: Content 4, subject: Subject 4, confirmated: True, writeitinstance: 2, slug: subject-4, author_name: Fiera, author_email: fiera@ciudadanointeligente.org}
   model: nuntium.message
   pk: 4
-- fields: {contact: 1, message: 1}
+- fields: {contact: 1, message: 1, site: 1}
   model: nuntium.outboundmessage
   pk: 1
-- fields: {contact: 2, message: 1}
+- fields: {contact: 2, message: 1, site: 1}
   model: nuntium.outboundmessage
   pk: 2
-- fields: {contact: 3, message: 1}
+- fields: {contact: 3, message: 1, site: 1}
   model: nuntium.outboundmessage
   pk: 3
-- fields: {url: 'http://popit.org/api/v1'}
+- fields: {url: 'http://localhost:8000'}
   model: popit.apiinstance
   pk: 1
-- fields: {url: 'http://popit.org/api/v2'}
+- fields: {url: 'http://localhost:8001'}
   model: popit.apiinstance
   pk: 2
-- fields: {api_instance: 1, name: Pedro, popit_url: 'http://popit.mysociety.org/api/v1/persons/1'}
+- fields: {api_instance: 1, name: Pedro, popit_url: 'http://localhost:8000/persons/pedro'}
   model: popit.person
   pk: 1
-- fields: {api_instance: 2, name: Marcel, popit_url: 'http://popit.mysociety.org/api/v1/persons/2'}
+- fields: {api_instance: 2, name: Marcel, popit_url: 'http://localhost:8000/persons/marcel'}
   model: popit.person
   pk: 2
-- fields: {api_instance: 2, name: Felipe, popit_url: 'http://popit.mysociety.org/api/v1/persons/3'}
+- fields: {api_instance: 2, name: Felipe, popit_url: 'http://localhost:8000/persons/felipe'}
   model: popit.person
   pk: 3
 - fields: {content: Public Answer,message: 2,person: 1}

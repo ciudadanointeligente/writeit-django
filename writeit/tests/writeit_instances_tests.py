@@ -7,56 +7,57 @@ import slumber
 from django.conf import settings
 from datetime import datetime
 from unittest import skip
-from popit.models import ApiInstance as PopitApiInstance, Person
+from popolo.models import Person
+# from popit.models import ApiInstance as PopitApiInstance
 from writeit.apikey_auth import ApiKeyAuth
-from popit.tests import instance_helpers
+# from popit.tests import instance_helpers
 import os
 import re
 import subprocess
 
 
-def popit_load_data(fixture_name='default'):
+# def popit_load_data(fixture_name='default'):
 
-    """
-    Use the mongofixtures CLI tool provided by the pow-mongodb-fixtures package
-    used by popit-api to load some test data into db. Don't use the test fixture
-    from popit-api though as we don't want changes to that to break our test
-    suite.
+#     """
+#     Use the mongofixtures CLI tool provided by the pow-mongodb-fixtures package
+#     used by popit-api to load some test data into db. Don't use the test fixture
+#     from popit-api though as we don't want changes to that to break our test
+#     suite.
 
-        https://github.com/powmedia/pow-mongodb-fixtures#cli-usage
+#         https://github.com/powmedia/pow-mongodb-fixtures#cli-usage
 
-    """
-    instance_helpers.delete_api_database()
-    project_root = os.path.normpath(os.path.join(os.path.dirname(__file__),'../..'))
+#     """
+#     instance_helpers.delete_api_database()
+#     project_root = os.path.normpath(os.path.join(os.path.dirname(__file__),'../..'))
     
-    # gather the args for the call
-    mongofixtures_path = os.path.join( project_root, 'popit-api-for-testing/node_modules/.bin/mongofixtures' )
-    database_name      = instance_helpers.get_api_database_name()
-    test_fixtures_path = os.path.join( project_root, 'writeit/tests/fixtures/%s.js'%fixture_name )
+#     # gather the args for the call
+#     mongofixtures_path = os.path.join( project_root, 'popit-api-for-testing/node_modules/.bin/mongofixtures' )
+#     database_name      = instance_helpers.get_api_database_name()
+#     test_fixtures_path = os.path.join( project_root, 'writeit/tests/fixtures/%s.js'%fixture_name )
 
-    # Check that the fixture exists
-    if not os.path.exists(test_fixtures_path):
-        raise Exception("Could not find fixture for %s at %s" % (fixture_name, test_fixtures_path))
+#     # Check that the fixture exists
+#     if not os.path.exists(test_fixtures_path):
+#         raise Exception("Could not find fixture for %s at %s" % (fixture_name, test_fixtures_path))
 
-    # Hack to deal with bad handling of absolute paths in mongofixtures.
-    # Fix: https://github.com/powmedia/pow-mongodb-fixtures/pull/14
-    test_fixtures_path = os.path.relpath( test_fixtures_path )
+#     # Hack to deal with bad handling of absolute paths in mongofixtures.
+#     # Fix: https://github.com/powmedia/pow-mongodb-fixtures/pull/14
+#     test_fixtures_path = os.path.relpath( test_fixtures_path )
 
-    # Usage: mongofixtures db_name path/to/fixtures.js
-    dev_null = open(os.devnull, 'w')
-    exit_code = subprocess.call([mongofixtures_path, database_name, test_fixtures_path], stdout=dev_null)
-    if exit_code:
-        raise Exception("Error loading fixtures for '%s'" % fixture_name)   
+#     # Usage: mongofixtures db_name path/to/fixtures.js
+#     dev_null = open(os.devnull, 'w')
+#     exit_code = subprocess.call([mongofixtures_path, database_name, test_fixtures_path], stdout=dev_null)
+#     if exit_code:
+#         raise Exception("Error loading fixtures for '%s'" % fixture_name)   
 
 
 class WriteItApiInstanceTestCase(TestCase):
     def setUp(self):
-        self.api_instance = WriteItApiInstance(url= 'http://writeit.ciudadanointeligente.org')
+        self.api_instance = WriteItApiInstance(url=settings.LOCAL_TESTING_WRITEIT)
         
 
     def test_create_instance(self):
         self.assertTrue(self.api_instance)
-        self.assertEquals(self.api_instance.url, 'http://writeit.ciudadanointeligente.org')
+        self.assertEquals(self.api_instance.url, settings.LOCAL_TESTING_WRITEIT)
 
 
     def test_instances_are_unique(self):
@@ -85,7 +86,7 @@ import simplejson as json
 
 class WriteItInstanceTestCase(TestCase):
     def setUp(self):
-        self.api_instance = WriteItApiInstance(url= 'http://writeit.ciudadanointeligente.org/api/v1/')
+        self.api_instance = WriteItApiInstance(url= settings.LOCAL_TESTING_WRITEIT)
         self.api_instance.save()
 
 
@@ -109,7 +110,7 @@ class WriteItInstanceTestCase(TestCase):
             url="/api/v1/instance/1/",
             remote_id=1
             )
-        self.assertEquals(writeitinstance.__unicode__(), 'the name of the thing at http://writeit.ciudadanointeligente.org/api/v1/')
+        self.assertEquals(writeitinstance.__unicode__(), 'the name of the thing at http://127.0.0.1.xip.io:3001/api/v1')
 
 
     def test_retrieve_all2(self):
@@ -138,6 +139,7 @@ class WriteItInstanceTestCase(TestCase):
             self.assertEquals(post_retrieve_instances[0].api_instance, self.api_instance)
             self.assertEquals(post_retrieve_instances[1].api_instance, self.api_instance)
 
+    @skip("Not yet creating an instance")
     def test_I_can_post_a_writeit_instance(self):
         api_instance = WriteItApiInstance.objects.create(url= settings.LOCAL_TESTING_WRITEIT)
         writeitinstance = WriteItInstance.objects.create(api_instance = api_instance, name='the name of the thing')
@@ -162,6 +164,7 @@ class WriteItInstanceTestCase(TestCase):
         # }
         self.assertEquals(response['name'], writeitinstance.name)
 
+    @skip('Not using popit')
     def test_I_can_post_a_writeit_instance_with_a_popit_api(self):
 
         popit_load_data()
@@ -199,11 +202,12 @@ class MessageTestCase(TestCase):
             name='the name of the thing',
             url="/api/v1/instance/1/"
             )
-        self.popit_api_instance = PopitApiInstance.objects.create(url='http://popit.org/api/v1')
+        # self.popit_api_instance = PopitApiInstance.objects.create(url='http://popit.org/api/v1')
         self.person1 = Person.objects.create(
-            api_instance=self.popit_api_instance, 
+            # api_instance=self.popit_api_instance, 
             name= "Felipe", 
-            popit_url= 'http://popit.org/api/v1/persons/3')
+            # popit_url= 'http://popit.org/api/v1/persons/3'
+            )
 
 
     def test_message_instanciate(self):
@@ -241,11 +245,12 @@ class MessageRemoteGetterTestCase(TestCase):
             url="/api/v1/instance/1/"
             )
 
-        self.popit_api_instance = PopitApiInstance.objects.create(url='http://popit.mysociety.org/api/v1')
+        # self.popit_api_instance = PopitApiInstance.objects.create(url='http://popit.mysociety.org/api/v1')
         self.person1 = Person.objects.create(
-            api_instance=self.popit_api_instance, 
+            # api_instance=self.popit_api_instance, 
             name= "Felipe", 
-            popit_url= 'http://popit.mysociety.org/api/v1/persons/3')
+            # popit_url= 'http://popit.mysociety.org/api/v1/persons/3'
+            )
 
     @skip("replaced by the one below that does not use any mocks")
     def test_message_post_to_the_API(self):
@@ -272,7 +277,7 @@ class MessageRemoteGetterTestCase(TestCase):
                 "content" : 'content',
                 "writeitinstance" : self.writeitinstance.url,
                 "slug" : 'subject-slugified',
-                "persons":['http://popit.org/api/v1/persons/3']
+                "persons":['http://localhost:8000/persons/felipe']
                 })
 
     def test_when_posting_to_the_api_writeit_message_gets_a_remote_uri(self):
@@ -334,7 +339,7 @@ class MessageRemoteGetterTestCase(TestCase):
 
             answers = Answer.objects.all()
             self.assertTrue(answers.count(), 1)
-            self.assertEquals(answers[0].content, "weeena")
+            self.assertEquals(answers[0].content, "Public Answer")
             self.assertEquals(answers[0].remote_id, 1)
 
 
