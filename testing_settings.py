@@ -45,24 +45,48 @@ TEMPLATE_DIRS = (
 )
 TESTING = 'test' in sys.argv
 
+STATIC_URL = '/static/'
+
 INSTALLED_APPS = (
-    'south',
+    'django.contrib.auth',
+    'django.contrib.admin',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.staticfiles',
+    'django.contrib.sites',
+    # 'south',
     'writeit',
-    'popit',
+    # 'popit',
+    'popolo',
     # Uncomment the next line to enable the admin:
     'django_nose',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'rest_framework',
+    'popolorest',
 )
-#I lauched this one in start_writeit_for_testing.bash
-LOCAL_TESTING_WRITEIT = 'http://127.0.0.1:3001/api/v1/'
+SITE_ID = 1
 
-#TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+)
+
+#I lauched this one in start_writeit_for_testing.bash
+LOCAL_TESTING_WRITEIT = 'http://127.0.0.1.xip.io:3001/api/v1'
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 #setting to avoid db changes during test
 SOUTH_TESTS_MIGRATE = False
 
-TEST_POPIT_API_URL = 'http://popit.mysociety.org'
+TEST_POPIT_API_URL = 'http://localhost:3000'
 
 #check from line 4 to 19 in example_data.yaml
 WRITEIT_USERNAME = 'admin'
@@ -80,3 +104,41 @@ TEST_POPIT_API_SUBDOMAIN = 'popit-django-test'
 TEST_POPIT_API_URL = "http://%s.%s.xip.io:%s/api" % ( TEST_POPIT_API_SUBDOMAIN,
                                                       TEST_POPIT_API_HOST_IP,
                                                       TEST_POPIT_API_PORT )
+
+logging = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'NOTSET',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+            }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['null'],  # Quiet by default!
+            'propagate': False,
+            'level': 'DEBUG',
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'ERROR'
+        },
+        'django.security': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'ERROR'
+        },
+    }
+}

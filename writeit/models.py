@@ -1,14 +1,14 @@
 from django.db import models
 from django.conf import settings
 from datetime import datetime
-from popit.models import Person
+from popolo.models import Person
 from writeit.apikey_auth import ApiKeyAuth
 from django.utils.encoding import force_text
-import simplejson as json
-import requests
-import time
-import re
+import json
 import slumber
+from rest_framework.reverse import reverse
+from urlparse import urljoin
+from django.contrib.sites.models import Site
 
 class WriteItApiInstance(models.Model):
 
@@ -53,7 +53,6 @@ class WriteItInstance(WriteItDocument):
             'api_instance':self.api_instance.url
             }
 
-
     def fetch_messages(self, remote_id):
         api = self.api_instance.get_api()
         objects = api.instance(remote_id).messages.get(username=settings.WRITEIT_USERNAME, api_key=settings.WRITEIT_KEY)["objects"]
@@ -62,11 +61,11 @@ class WriteItInstance(WriteItDocument):
                 remote_id=message_dict['id'],
                 writeitinstance=self,
                 api_instance=self.api_instance,
-                author_email= message_dict["author_email"],
-                author_name= message_dict["author_name"],
-                content= message_dict["content"],
-                subject= message_dict["subject"],
-                url= message_dict['resource_uri']
+                author_email=message_dict["author_email"],
+                author_name=message_dict["author_name"],
+                content=message_dict["content"],
+                subject=message_dict["subject"],
+                url=message_dict['resource_uri']
                 )
             for answer_dict in message_dict['answers']:
                 answer = Answer.objects.create(
@@ -77,9 +76,7 @@ class WriteItInstance(WriteItDocument):
 
     def push_to_the_api(self, extra_params=None):
         api = self.api_instance.get_api()
-        dictified = {
-        'name': self.name
-        }
+        dictified = {'name': self.name}
         if extra_params:
             dictified.update(extra_params)
         response = api.instance._request("POST", data=dictified)
@@ -87,8 +84,6 @@ class WriteItInstance(WriteItDocument):
         self.url = as_json['resource_uri']
         self.remote_id = as_json['id']
         self.save()
-
-
 
 
 class Message(WriteItDocument):
@@ -99,30 +94,32 @@ class Message(WriteItDocument):
     writeitinstance = models.ForeignKey(WriteItInstance)
     slug = models.CharField(max_length=512)
     people = models.ManyToManyField(Person, related_name='messages')
-        
 
-        
     def push_to_the_api(self):
         api = self.api_instance.get_api()
+        current_site = Site.objects.get_current()
         persons = []
         for person in self.people.all():
-            persons.append(person.popit_url)
-
+            api_url = urljoin('http://' + current_site.domain, reverse('person-detail', kwargs={'pk': person.id}))
+            if api_url.endswith('/'):
+                api_url = api_url[:-1]
+            persons.append(api_url)
 
         dictionarized = {
-            "author_name" : self.author_name,
-            "author_email" : self.author_email,
-            "subject" : self.subject,
-            "content" : self.content,
-            "writeitinstance" : self.writeitinstance.url,
-            "slug" : self.slug,
-            "persons":persons
+            "author_name": self.author_name,
+            "author_email": self.author_email,
+            "subject": self.subject,
+            "content": self.content,
+            "writeitinstance": self.writeitinstance.url,
+            "slug": self.slug,
+            "persons": persons
             }
-        response = api.message._request("POST", data=dictionarized)
+        response = api.message._request("POST", data=dictionarized) 
         as_json = json.loads(force_text(response.content))
         self.url = as_json['resource_uri']
         self.remote_id = as_json['id']
         self.save()
+
 
 class Answer(WriteItDocument):
     content = models.TextField()

@@ -1,4 +1,3 @@
 Django
 slumber
-south
--e git://github.com/mysociety/popit-django.git#egg=popit-django
+-e git+https://github.com/openpolis/django-popolo.git#egg=django_popolo-dev

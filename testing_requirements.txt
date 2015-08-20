@@ -1,2 +1,5 @@
+nose
 django-nose
-mock
+mock==1.0.1
+djangorestframework
+-e git+https://github.com/ciudadanointeligente/popolorest@redisplaying_info_as_popit_does#egg=popolorest
