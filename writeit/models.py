@@ -6,9 +6,7 @@ from writeit.apikey_auth import ApiKeyAuth
 from django.utils.encoding import force_text
 import json
 import slumber
-from rest_framework.reverse import reverse
-from urlparse import urljoin
-from django.contrib.sites.models import Site
+from writeit import get_api_url_for_person
 
 class WriteItApiInstance(models.Model):
 
@@ -97,12 +95,9 @@ class Message(WriteItDocument):
 
     def push_to_the_api(self):
         api = self.api_instance.get_api()
-        current_site = Site.objects.get_current()
         persons = []
         for person in self.people.all():
-            api_url = urljoin('http://' + current_site.domain, reverse('person-detail', kwargs={'pk': person.id}))
-            if api_url.endswith('/'):
-                api_url = api_url[:-1]
+            api_url = get_api_url_for_person(person)
             persons.append(api_url)
 
         dictionarized = {
