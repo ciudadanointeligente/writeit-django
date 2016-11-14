@@ -55,11 +55,11 @@ class WriteItInstance(WriteItDocument):
         api = self.api_instance.get_api()
         objects = api.instance(remote_id).messages.get(username=settings.WRITEIT_USERNAME, api_key=settings.WRITEIT_KEY)["objects"]
         for message_dict in objects:
+            print message_dict
             message = Message.objects.create(
                 remote_id=message_dict['id'],
                 writeitinstance=self,
                 api_instance=self.api_instance,
-                author_email=message_dict["author_email"],
                 author_name=message_dict["author_name"],
                 content=message_dict["content"],
                 subject=message_dict["subject"],
@@ -109,7 +109,7 @@ class Message(WriteItDocument):
             "slug": self.slug,
             "persons": persons
             }
-        response = api.message._request("POST", data=dictionarized) 
+        response = api.message._request("POST", data=dictionarized)
         as_json = json.loads(force_text(response.content))
         self.url = as_json['resource_uri']
         self.remote_id = as_json['id']

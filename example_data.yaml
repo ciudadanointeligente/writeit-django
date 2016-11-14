@@ -20,10 +20,10 @@
   model: tastypie.apikey
   pk: 1
 - fields: {name: instance 1, slug: instance1, owner: 1}
-  model: nuntium.writeitinstance
+  model: instance.writeitinstance
   pk: 1
 - fields: {name: instance 2, slug: instance2, owner: 1}
-  model: nuntium.writeitinstance
+  model: instance.writeitinstance
   pk: 2
 - fields: {content_type: 13, datetime: 2013-04-26, object_id: 1, status: new}
   model: nuntium.messagerecord
@@ -71,7 +71,7 @@
   model: nuntium.answer
   pk: 2
 - fields: {person: 1, writeitinstance: 1}
-  model: nuntium.membership
+  model: instance.membership
   pk: 1
 - fields: {label_name: Electronic Mail, name: e-mail}
   model: contactos.contacttype

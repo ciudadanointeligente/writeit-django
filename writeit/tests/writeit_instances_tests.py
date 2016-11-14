@@ -77,7 +77,7 @@ class WriteItInstanceTestCase(TestCase):
         self.assertEquals(post_retrieve_instances[0].remote_id, 1)
         self.assertEquals(post_retrieve_instances[1].remote_id, 2)
         self.assertEquals(post_retrieve_instances[0].name, "instance 1")
-        
+
         self.assertEquals(post_retrieve_instances[1].name, "instance 2")
 
         self.assertEquals(post_retrieve_instances[0].url, "/api/v1/instance/1/")
@@ -97,7 +97,7 @@ class WriteItInstanceTestCase(TestCase):
 
         api = api_instance.get_api()
         response = api.instance(writeitinstance.remote_id).get()
-        # writeit returns this when 
+        # writeit returns this when
         # getting http://localhost:2425/api/v1/instance/2/?format=json&username=admin&api_key=a
         # {
         # id: 2,
@@ -127,7 +127,7 @@ class WriteItInstanceTestCase(TestCase):
         response = api.instance(writeitinstance.remote_id).get()
         self.assertEquals(response['name'], writeitinstance.name)
         self.assertEquals(len(response['persons']), 2)
-        
+
 
         popit_instance = PopitApiInstance.objects.create(url= settings.TEST_POPIT_API_URL)
         popit_instance.fetch_all_from_api()
@@ -215,7 +215,6 @@ class MessageRemoteGetterTestCase(TestCase):
             created_messages = Message.objects.all()
 
             self.assertTrue(created_messages.count())
-            self.assertTrue(created_messages[0].author_email)
             self.assertTrue(created_messages[0].remote_id)
             self.assertTrue(created_messages[0].author_name)
 
